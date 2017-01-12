@@ -1,0 +1,33 @@
+CC=arm_v5t_le-gcc
+CXX=arm_v5t_le-g++
+AR=arm_v5t_le-ar
+LD=arm_v5t_le-gcc
+CFLAGS  = -I ../include -I.
+LDFLAGS = -O -Wall -lpthread -lcgi -lm -L../bin 
+TOP_DIR =..
+LIB_DIR =$(TOP_DIR)/bin
+
+#CONFIG=debug
+ifeq ($(CONFIG), debug)
+CC_OPTS+=-g
+DEFINE=-DDEBUG
+OBJ_DIR =$(LIB_DIR)/debug
+else
+CC_OPTS+=-O3
+DEFINE=
+OBJ_DIR =$(LIB_DIR)/release
+endif
+
+SOURCES = cgi.c util.c sys_general.c  net_link.c  post_srv_web.c md5.c fcgi_stdio.c fcgiapp.c os_unix.c json.c
+OBJECTS = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SOURCES)) 
+
+cgi:$(OBJECTS)
+	$(CC)  $(CFLAGS)  $^ -o $@ $(LDFLAGS)
+	mv cgi $(LIB_DIR)
+
+$(OBJ_DIR)/%.o:%.c
+	$(CC) $(CFLAGS) $(CC_OPTS) -c $^ -o $@
+
+
+clean:
+	rm $(OBJECTS) $(OBJ_DIR)/cgi
