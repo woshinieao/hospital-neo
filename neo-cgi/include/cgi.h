@@ -5,7 +5,7 @@
 
 
 #define CGI_LOG
-#define NO_ERR	(0)
+#define NO_ERR	(1)
 #define SET_ERR		(-1)
 #define GET_METHOD   (0)
 #define PSOT_METHOD   (1)
@@ -46,7 +46,7 @@ typedef struct _class_member
 
 
 
-#define SERVER_VERSION 0x01010101
+#define SERVER_VERSION 0x01010201
 
 
 #endif

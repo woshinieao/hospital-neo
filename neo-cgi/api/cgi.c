@@ -62,7 +62,7 @@ static tClassMember ip_interfacesWlan[]= {
 
 
 
-int cgi_set_return(int err)
+int cgi_set_return(int err,char *info)
 {
 	char *out;
 	json *root = NULL;
@@ -83,6 +83,8 @@ int cgi_set_return(int err)
 		json_AddStringToObject(root, "flag","ERROR");
 	
 	json_AddStringToObject(root, "IP",dev_ip);
+	if(info != NULL)
+		json_AddStringToObject(root, "INFO",info);
 	json_AddStringToObject(root, "time",str);
 	out = json_Print(root);	
 	printf("%s\n",out);	
@@ -153,7 +155,7 @@ int check_cfg()
 		time_jiffies = 5;
 	
 	
-	return 0;	
+	return NO_ERR;	
 	
 }
 
@@ -318,7 +320,7 @@ int set_wifi_config()
 		cgiLog("cannot open wifi config file.\n");
 		return SET_ERR;
 	}
-
+	
 	memset(ssid,0,256);
 	memset(ask,0,256);
 
@@ -335,7 +337,7 @@ int set_wifi_config()
 
 	CFG_set_key(MAIN_CFG_FILE, "SYSTEM", "reboot", "true");
 
-	return 0;
+	return NO_ERR;
 }
 
 
@@ -366,7 +368,10 @@ int set_config_call()
 			{
 				ret += configList[i].cgi();
 			}
-			
+	if(ret>=0)
+		cgi_set_return(NO_ERR,NULL);
+	else
+		cgi_set_return(SET_ERR,"config error !");
 	return ret;
 
 }
@@ -374,14 +379,31 @@ int set_config_call()
 
 int reboot_now()
 {
+	int ret=0;
 	cgiLog("reboot_now ");
-		return CFG_set_key(MAIN_CFG_FILE, "SYSTEM", "reboot", "true");
+		 
+			ret=CFG_set_key(MAIN_CFG_FILE, "SYSTEM", "reboot", "true");
+	if(ret>0)
+		cgi_set_return(NO_ERR,NULL);
+	else
+		cgi_set_return(SET_ERR,"reboot error !");
+	return ret;
 		
 }
 
+int get_version()
+{
+	unsigned long version = SERVER_VERSION;
+	char buff[256];
+	sprintf(buff,"verson:%lu.%lu.%lu.%lu built at: %8s,on %12s",(version&0xFF000000)>>24,(version&0xFF0000)>>16,(version&0xFF00)>>8,(version&0xFF),__TIME__,__DATE__);
+	cgi_set_return(NO_ERR,buff);
+	return NO_ERR;
+
+}
 static tCfgCall actionlist[] = {
 	{"config",		set_config_call},
-	{"reboot",		reboot_now},	
+	{"reboot",		reboot_now},
+	{"version",		get_version}
 };
 
 
@@ -421,7 +443,7 @@ int main(void)
 			contentLength =getenv("CONTENT_LENGTH");
 			strlenth = strtol(contentLength, NULL, 10) ;
 			if (contentLength == NULL || strlenth == 0) {
-				cgi_set_return(SET_ERR);
+				cgi_set_return(SET_ERR,"post string is null!");
 				return -1;
 			}
 			for (i = 0; i < strlenth; i++) {
@@ -437,8 +459,7 @@ int main(void)
 			char *p = getenv("QUERY_STRING");
 			if(p == NULL)
 			{
-				cgi_set_return(SET_ERR);
-				
+				cgi_set_return(SET_ERR,"get string is null!");
 				return -1;
 			}	
 			strcpy(pContent,p);
@@ -448,21 +469,23 @@ int main(void)
 		pAction = get_cgi("action");
 		cgiLog("STRING:%s  *** action:%s\n",pContent,pAction);
 		if(pAction == NULL)
-				cgi_set_return(SET_ERR);
+				cgi_set_return(SET_ERR,"action is null !");
 		for( i = 0;i<icaller; i++)
 			if(strcmp(actionlist[i].item,pAction) == 0)
 				break;
 		if(i>=icaller){
-			cgi_set_return(SET_ERR);
+			cgi_set_return(SET_ERR,"action match null!");
 			return -1;
 		}
 		if(actionlist[i].cgi != NULL)
 			iRet = actionlist[i].cgi();
 
+/*
 		if(iRet<0)
-			cgi_set_return(SET_ERR);
-		else
+			cgi_set_return(SET_ERR,"");
+		else if(iRet>0)
 			cgi_set_return(NO_ERR);
+*/		
 		cgiLog("cgi over -------------\n");
 		fflush(stdout);
 		fflush(stdin);
@@ -471,7 +494,7 @@ int main(void)
 	}//end while(FCGI_Accept() >= 0)
 	
 	
-	return 0;
+	return NO_ERR;
 }
 
 

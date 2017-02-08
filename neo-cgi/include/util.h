@@ -5,7 +5,7 @@
 #define MAX_TXT_LINE_FLD                         128 
 #define MAX_CFG_BUF                              512 
 
-#define CFG_OK                                   0 
+#define CFG_OK                                   1 
 #define CFG_SECTION_NOT_FOUND                    -1 
 #define CFG_KEY_NOT_FOUND                        -2 
 #define CFG_ERR                                  -10 
@@ -20,7 +20,7 @@
 #define CFG_ERR_INTERNAL                         -21 
 #define CFG_ERR_EXCEED_BUF_SIZE                  -22
 
-#define COPYF_OK                                 0 
+#define COPYF_OK                                 1 
 #define COPYF_ERR_OPEN_FILE                      -10 
 #define COPYF_ERR_CREATE_FILE                    -11 
 #define COPYF_ERR_READ_FILE                      -12 

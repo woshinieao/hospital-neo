@@ -8,7 +8,7 @@
 
 
 
-#define SERVER_VERSION 0x01010101
+#define SERVER_VERSION 0x01010201
 #define FALSE	0
 #define TRUE	1
 #define BUF_SIZE            (64)
@@ -283,7 +283,7 @@ void *check_state(void *para)
 	getConfInfo("SERVER","server_port",server_port);
 	port = atoi(server_port);
 	
-		//sleep(2);
+	sleep(1);
 	}
 	close(fd);
 
