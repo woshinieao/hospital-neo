@@ -302,6 +302,8 @@ int set_wifi_config()
 	cgiLog("set_wifi_config : ......\n");
 	char *pssid = NULL;
 	char *pask = NULL;
+	char ssid[256];
+	char ask[256];
 	pssid = get_cgi(wifi_cfg_class[0].item);
 	if(pssid==NULL)
 		return SET_ERR;
@@ -310,15 +312,30 @@ int set_wifi_config()
 	if(pask==NULL)
 		return SET_ERR;
 
-	FILE*fp;　/*定义文件指针fp*/
-	if((fp=fopen("/etc/wpa_supplicant/wpa_supplicant.conf","w"))==NULL)/*打开文件写模式*/
+	FILE*fp;/*定义文件指针fp*/
+	if((fp=fopen("/etc/wpa_supplicant/wpa_supplicant.conf","w"))==NULL)
 	{
-		cgiLog("cannot open wifi config file.\n");/*判断文件是否正常打开*/
+		cgiLog("cannot open wifi config file.\n");
 		return SET_ERR;
 	}
-	fputs(str,fp);/*将字符串写入文件*/
-	fclose(fp);/*关闭文件*/
 
+	memset(ssid,0,256);
+	memset(ask,0,256);
+
+	cgiLog("ssid:%s  ask:%s \n",pssid,pask);
+	sprintf(ssid,"ssid=\"%s\"",pssid);
+	sprintf(ask,"\r\npsk=\"%s\"",pask);
+
+	fputs("network={\r\n",fp);
+	fputs(ssid,fp);
+	fputs(ask,fp);
+
+	fputs("\r\n}\r\n",fp);
+	fclose(fp);
+
+	CFG_set_key(MAIN_CFG_FILE, "SYSTEM", "reboot", "true");
+
+	return 0;
 }
 
 

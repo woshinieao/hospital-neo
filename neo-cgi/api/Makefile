@@ -1,7 +1,7 @@
-CC=arm-linux-gnueabi-gcc
-CXX=arm-linux-gnueabi-g++
-AR=arm-linux-gnueabi-ar
-LD=arm-linux-gnueabi-gcc
+CC=gcc
+CXX=g++
+AR=ar
+LD=gcc
 CFLAGS  = -I ../include -I/usr/include
 LDFLAGS = -O -Wall -lpthread -lm -L/usr/local/lib -L../bin -L/usr/lib -lfcgi 
 TOP_DIR =..
@@ -31,7 +31,7 @@ target:$(PROG)
 $(PROG):$(OBJECTS)
 	$(CC)  $(CFLAGS)  $^ -o $@ $(LDFLAGS)
 #	mv cgi $(OUT_DIR) -f
-	cp $(PROG) /var/www/media/cgi-bin/ -f
+#	cp $(PROG) /var/www/media/cgi-bin/ -f
 
 $(OBJ_DIR)/%.o:%.c
 	$(CC) $(CFLAGS) $(CC_OPTS) -c $^ -o $@
