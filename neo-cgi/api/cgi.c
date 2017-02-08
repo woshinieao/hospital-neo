@@ -335,7 +335,7 @@ int set_wifi_config()
 	fputs("\r\n}\r\n",fp);
 	fclose(fp);
 
-	CFG_set_key(MAIN_CFG_FILE, "SYSTEM", "reboot", "true");
+//	CFG_set_key(MAIN_CFG_FILE, "SYSTEM", "reboot", "true");
 
 	return NO_ERR;
 }
@@ -366,6 +366,7 @@ int set_config_call()
 		for( i = 0;i<imber;i++)
 			if(get_cgi(configList[i].item) !=NULL)
 			{
+			cgiLog("ret %d ",ret);
 				ret += configList[i].cgi();
 			}
 	if(ret>=0)
