@@ -33,7 +33,7 @@ $(OBJDIR)/%.o: %.c
 	
 -include $(DEPS)
 $(LIB): $(LIBOBJ)
-	$(CC) $(LDFLAGS) -shared -o $@ $^
+#	$(CC) $(LDFLAGS) -shared -o $@ $^
 $(SLIB): $(LIBOBJ)
 	$(AR) rcu $@ $^
 	$(RANLIB) $@

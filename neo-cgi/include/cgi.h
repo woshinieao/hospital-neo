@@ -17,14 +17,13 @@
 #define NET_CONFIG_FILE "/etc/network/interfaces-bak"
 
 
-#define NET_EHT0 "eth0"
-#define NET_EHT1 "eth1"
-
-
-
 #define SER_IP_DEFAULT "192.168.1.2"
 #define PORT_DEFAULT (80)
 #define DEV_IP_DEFAULT "192.168.1.141"
+#define DEV_GATEWAY_DEFAULT "192.168.1.1"
+#define DEV_NETMASK_DEFAULT "255.255.255.0"
+
+
 
 #define TIME_JIFF_DEFAULT (5)
 
@@ -44,6 +43,10 @@ typedef struct _class_member
 	char item[32];
 
 }tClassMember;
+
+
+
+#define SERVER_VERSION 0x01010101
 
 
 #endif

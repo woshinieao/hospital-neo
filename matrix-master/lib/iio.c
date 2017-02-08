@@ -5,10 +5,12 @@
 #include "libfahw-gpio.h"
 #include "libfahw-filectl.h"
 
+
 EXPORT int dht11Read(int type, int *data) 
 {
     clearLastError();
     int ret = -1;
+	
     DIR *d;
     struct dirent *de;
     

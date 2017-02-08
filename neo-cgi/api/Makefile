@@ -1,7 +1,7 @@
-CC=gcc
-CXX=g++
-AR=ar
-LD=gcc
+CC=arm-linux-gnueabi-gcc
+CXX=arm-linux-gnueabi-g++
+AR=arm-linux-gnueabi-ar
+LD=arm-linux-gnueabi-gcc
 CFLAGS  = -I ../include -I/usr/include
 LDFLAGS = -O -Wall -lpthread -lm -L/usr/local/lib -L../bin -L/usr/lib -lfcgi 
 TOP_DIR =..

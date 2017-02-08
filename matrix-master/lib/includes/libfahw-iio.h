@@ -8,7 +8,7 @@
 #define SET_DHT11_PIN           (0)
 #define UNSET_DHT11_PIN         (1)
 #define GET_DHT11_PIN           (4)
-int dht11Read(int type, int *data);
+int dht11Read(int type, int *data );
 
 // HCSR04
 #define HCSR04_PATH             "/sys/class/hcsr04/value"  

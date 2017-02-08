@@ -13,11 +13,6 @@
 
 #include "net_util.c"
 
-#define SER_IP_DEFAULT "192.168.1.2"
-#define PORT_DEFAULT (80)
-#define DEV_IP_DEFAULT "192.168.1.141"
-
-
 
 static char ser_ip[32]  ;
 static int	ser_port ;
@@ -32,6 +27,8 @@ static tClassMember ser_cfg_class[]= {
 static tClassMember dev_cfg_class[] = {
 	{"device_ip"},
 	{"device_port"},
+	{"device_netmask"},
+	{"device_gateway"},
 };
 
 static tClassMember time_cfg_class[] = {
@@ -41,6 +38,7 @@ static tClassMember time_cfg_class[] = {
 
 static tClassMember wifi_cfg_class[] = {
 	{"wifi"},
+	{"ask"},
 	
 };
 
@@ -83,6 +81,8 @@ int cgi_set_return(int err)
 		json_AddStringToObject(root, "flag","OK");
 	else
 		json_AddStringToObject(root, "flag","ERROR");
+	
+	json_AddStringToObject(root, "IP",dev_ip);
 	json_AddStringToObject(root, "time",str);
 	out = json_Print(root);	
 	printf("%s\n",out);	
@@ -117,6 +117,9 @@ int check_cfg()
 	
 	CFG_set_key(MAIN_CFG_FILE, "DEV", "port", buf_port);
 	CFG_set_key(MAIN_CFG_FILE, "DEV", "address", DEV_IP_DEFAULT);
+
+	CFG_set_key(MAIN_CFG_FILE, "DEV", "gateway", DEV_GATEWAY_DEFAULT);
+	CFG_set_key(MAIN_CFG_FILE, "DEV", "netmask", DEV_NETMASK_DEFAULT);
 	
 	CFG_set_key(MAIN_CFG_FILE, "TIME", "interval", buf_time);
 	CFG_set_key(MAIN_CFG_FILE, "SYSTEM", "reboot", "false");
@@ -161,7 +164,7 @@ int fix_net_config(char *ip ,char *mask, char *gateway)
 	char buf[1024];
 	char *p = NULL;
 	char *pDst[3] = {NULL};
-
+	int i=0;
 	if(ip ==NULL && mask== NULL && gateway==NULL)
 		return SET_ERR;
 	pDst[0] = ip,pDst[1] = mask,pDst[2]=gateway;
@@ -169,30 +172,18 @@ int fix_net_config(char *ip ,char *mask, char *gateway)
 	FILE *fd = fopen(NET_CONFIG_FILE,"a");
 	memset(buf,0,1024);
 
-
-	cgiLog("aaaaaaaaaaaaaa set_dev_ip :%s  11111111111111111111      ",dev_ip);
-
-
-	
 	while(fgets(buf,1024,fd) !=EOF)
 	{
-		cgiLog("ip_interfacesEth[0].item : %s  buf:%s   00000	 ",ip_interfacesEth[0].item,buf);
-	
 		if(strcmp(ip_interfacesEth[0].item,buf) != 0)
 			continue;
 			memset(buf,0,1024);
-			fgets(buf,1024,fd);
-	cgiLog(" ip_interfacesEth[1].item:%s  11111111111111111111 	 ",ip_interfacesEth[1].item);
-			
+			fgets(buf,1024,fd);			
 			if((strcmp(buf,ip_interfacesEth[1].item)) ==NULL)
 				return SET_ERR;
-			for(int i=0;i<3;i++)
+			for( i=0;i<3;i++)
 			{
 				memset(buf,0,1024);
-				fgets(buf,1024,fd);
-
-	cgiLog("ip_interfacesEth[%d].item : %s	  00000  ",i+2,ip_interfacesEth[i+2].item);
-				
+				fgets(buf,1024,fd);				
 				if((p=strstr(buf,ip_interfacesEth[i+2].item)) ==NULL)
 					return SET_ERR;
 				sprintf(buf+sizeof(ip_interfacesEth[i+2].item)," %s",pDst[i]);
@@ -200,7 +191,6 @@ int fix_net_config(char *ip ,char *mask, char *gateway)
 				fputs(buf,fd);
 			}
 			break;
-				
 	}
 	fclose(fd);
 
@@ -209,21 +199,15 @@ int fix_net_config(char *ip ,char *mask, char *gateway)
 
 int set_server_ip()
 {
-	cgiLog("333333333333333----------------n ");
-
 	char *p = NULL;
 	int ret;
 	p = get_cgi(ser_cfg_class[0].item);
 
-	cgiLog("333333333333333 -  ser_ip:%s\n",p);
 	if(p==NULL)
-		return SET_ERR;
-		
+		return SET_ERR;		
 	strncpy(ser_ip ,p,strlen(p));
 	cgiLog("set_server_ip :%s\n",ser_ip);
 	ret =CFG_set_key(MAIN_CFG_FILE, "SERVER", "server_ip", ser_ip);
-	system("killall -9 matrix-temp_humidity");
-	//system("reboot");
 	return ret;
 }
 
@@ -236,7 +220,6 @@ int set_server_port()
 		return SET_ERR;
 
 	ser_port = atoi(p);
-
 	cgiLog("set_server_port :%d\n",ser_port);
 	return CFG_set_key(MAIN_CFG_FILE, "SERVER", "server_port", p);
 }
@@ -252,10 +235,7 @@ int set_dev_ip()
 		return SET_ERR;
 	strncpy(dev_ip ,p,strlen(p));
 	cgiLog("set_dev_ip :%s\n",dev_ip);
-	iRet -= CFG_set_key(MAIN_CFG_FILE, "DEV", "address", dev_ip);
- // iRet -= net_set_ifaddr(NET_EHT0,inet_addr(dev_ip));
-//	fix_net_config(dev_ip,NULL,NULL);
-
+	return CFG_set_key(MAIN_CFG_FILE, "DEV", "address", dev_ip);
 		
 }
 
@@ -272,6 +252,35 @@ int set_dev_port()
 	cgiLog("set_dev_port :%d\n",dev_port);
 	return CFG_set_key(MAIN_CFG_FILE, "DEV", "port", p);
 }
+
+int set_netmask()
+{
+
+	char *p = NULL;
+	p = get_cgi(dev_cfg_class[2].item);
+	if(p==NULL)
+		return SET_ERR;
+
+	
+	cgiLog("set_netmask :%s\n",p);
+	return CFG_set_key(MAIN_CFG_FILE, "DEV", "netmask", p);
+}
+
+
+int set_gateway()
+{
+
+	char *p = NULL;
+	p = get_cgi(dev_cfg_class[3].item);
+	if(p==NULL)
+		return SET_ERR;
+	cgiLog("set_gatway :%s\n",p);
+	return CFG_set_key(MAIN_CFG_FILE, "DEV", "gateway", p);
+}
+
+
+
+
 
 int set_time_config()
 {
@@ -291,6 +300,24 @@ int set_time_config()
 int set_wifi_config()
 {
 	cgiLog("set_wifi_config : ......\n");
+	char *pssid = NULL;
+	char *pask = NULL;
+	pssid = get_cgi(wifi_cfg_class[0].item);
+	if(pssid==NULL)
+		return SET_ERR;
+
+	pask = get_cgi(wifi_cfg_class[1].item);
+	if(pask==NULL)
+		return SET_ERR;
+
+	FILE*fp;　/*定义文件指针fp*/
+	if((fp=fopen("/etc/wpa_supplicant/wpa_supplicant.conf","w"))==NULL)/*打开文件写模式*/
+	{
+		cgiLog("cannot open wifi config file.\n");/*判断文件是否正常打开*/
+		return SET_ERR;
+	}
+	fputs(str,fp);/*将字符串写入文件*/
+	fclose(fp);/*关闭文件*/
 
 }
 
@@ -301,6 +328,8 @@ static tCfgCall configList[] =
 	{"device_ip",	set_dev_ip},
 	{"server_port",	set_server_port},
 	{"device_port",	set_dev_port},
+	{"device_netmask",set_netmask},
+	{"device_gateway",set_gateway},
 	{"interval",	set_time_config},
 	{"wifi",		set_wifi_config},
 
@@ -313,12 +342,12 @@ int set_config_call()
 
 	
 	int ret = 0;
+	int i=0;
 	int imber= sizeof(configList)/sizeof(tCfgCall);
-		for(int i = 0;i<imber;i++)
+		for( i = 0;i<imber;i++)
 			if(get_cgi(configList[i].item) !=NULL)
 			{
-				cgiLog("2222222222222222222222-  item:%s\n",configList[i].item);
-				ret -= configList[i].cgi();
+				ret += configList[i].cgi();
 			}
 			
 	return ret;
@@ -328,7 +357,7 @@ int set_config_call()
 
 int reboot_now()
 {
-	cgiLog("-------------reboot_now------------\n");
+	cgiLog("reboot_now ");
 		return CFG_set_key(MAIN_CFG_FILE, "SYSTEM", "reboot", "true");
 		
 }
@@ -344,7 +373,7 @@ int main(void)
     int icaller= sizeof(actionlist)/sizeof(tCfgCall);
 	char pContent[2048];
 	
-	cgiLog("-------------start config------------2-\n");
+	cgiLog("cgi start -------------\n");
 	
     while(FCGI_Accept() >= 0){
     	char *method 	= NULL;
@@ -366,7 +395,7 @@ int main(void)
 		autor = getenv("USER_AGENT");
 	
 
-	cgiLog("USER :%s\n",add);
+		cgiLog("USER :%s\n",add);
 		method = getenv("REQUEST_METHOD");
 		if(strcmp(method,"POST") == 0){
 			
@@ -398,9 +427,6 @@ int main(void)
 			strcpy(pContent,p);
 
 		}
-
-
-	
 		init_cgi(pContent,strlen(pContent));
 		pAction = get_cgi("action");
 		cgiLog("STRING:%s  *** action:%s\n",pContent,pAction);
@@ -420,7 +446,7 @@ int main(void)
 			cgi_set_return(SET_ERR);
 		else
 			cgi_set_return(NO_ERR);
-	cgiLog("444444444444444-\n");	
+		cgiLog("cgi over -------------\n");
 		fflush(stdout);
 		fflush(stdin);
 	
