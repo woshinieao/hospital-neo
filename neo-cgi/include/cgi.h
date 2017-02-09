@@ -46,7 +46,7 @@ typedef struct _class_member
 
 
 
-#define SERVER_VERSION 0x01010201
+#define SERVER_VERSION 0x02020206
 /******************************************************************************
 * File Name     : cgi.h
 * Module Name   : cgi

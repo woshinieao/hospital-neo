@@ -327,7 +327,7 @@ int main(int argc, char ** argv)
 	{
 		if( (strcmp(argv[1],"-v") == 0) || (strcmp(argv[1],"-V") == 0))
 		{
-			printf("System_Server Verion:%lu.%lu.%lu.%lu\nBuild at %8s,on %12s\n",(version&0xFF000000)>>24,(version&0xFF0000)>>16,(version&0xFF00)>>8,(version&0xFF),__TIME__,__DATE__);
+			printf("Version:%lu.%lu.%lu.%lu %8s\n",(version&0xFF000000)>>24,(version&0xFF0000)>>16,(version&0xFF00)>>8,(version&0xFF),__TIME__);
 			return 0;
 		}
 	}

@@ -408,11 +408,11 @@ static tCfgCall actionlist[] = {
 };
 
 
-int main(void)
+int main(int argc, char ** argv)
 {
     int icaller= sizeof(actionlist)/sizeof(tCfgCall);
 	char pContent[2048];
-	
+	unsigned long version = SERVER_VERSION; 
 	cgiLog("cgi start -------------\n");
 	
     while(FCGI_Accept() >= 0){
@@ -426,6 +426,17 @@ int main(void)
 		int i = 0;
 		char *pAction = NULL;
 		char *pCfg = NULL;
+
+		if(argc == 2  ) 
+		{
+			if( (strcmp(argv[1],"-v") == 0) || (strcmp(argv[1],"-V") == 0))
+			{
+				printf("Version:%lu.%lu.%lu.%lu %8s\n",(version&0xFF000000)>>24,(version&0xFF0000)>>16,(version&0xFF00)>>8,(version&0xFF),__TIME__);
+				return 0;
+			}
+		}
+
+		
 		printf("Content-type:  text/html;charset=GBK\r\n""\r\n");
 		memset(pContent,0,sizeof(pContent));
 		
