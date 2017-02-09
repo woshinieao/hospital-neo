@@ -1,0 +1,52 @@
+
+CC=gcc
+CXX=g++
+AR=ar
+LD=gcc
+
+VERSION = 1.0
+
+#¹¤×÷Ä¿Â¼
+TOP_DIR =..
+LIB_DIR =$(TOP_DIR)/bin
+TARGET  = libcgi.so
+
+CFLAGS  = -I ../include
+LDFLAGS = -O -Wall -lpthread 
+DEMO_LDFLAGS =-lpthread
+
+#CONFIG=debug
+ifeq ($(CONFIG), debug)
+CC_OPTS+=-g
+DEFINE=-DDEBUG
+OBJ_DIR =$(LIB_DIR)/debug
+else
+CC_OPTS+=-O3
+DEFINE=
+OBJ_DIR =$(LIB_DIR)/release
+endif
+
+SOURCES = fcgi_stdio.c fcgiapp.c os_unix.c json.c
+
+OBJECTS = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SOURCES))  $(OBJ_DIR)/fcgio.o
+
+target: $(TARGET) 
+	@echo "+----------------------------------------------------+"
+	@echo "+       building libcgi                              +"
+	@echo "+----------------------------------------------------+"
+	@date
+	@echo ""
+	
+$(TARGET):$(OBJECTS)
+	$(CC)  -shared -fPIC $^ -o $@  $(LIBS)
+	cp $(TARGET) $(LIB_DIR) -f
+	
+$(OBJ_DIR)/%.o:%.c
+	$(CC) $(CFLAGS) $(CC_OPTS) $(DEFINE) -c $^ -o $@
+	
+$(OBJ_DIR)/fcgio.o:fcgio.cpp
+	$(CXX) $(CFLAGS) $(CC_OPTS) $(DEFINE) -c $^ -o $@
+
+clean:
+	rm -rf $(OBJ_DIR)/*.o $(LIB_DIR)/$(TARGET)
+

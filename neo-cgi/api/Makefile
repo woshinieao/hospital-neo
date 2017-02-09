@@ -1,9 +1,9 @@
-CC=gcc
-CXX=g++
-AR=ar
-LD=gcc
+CC=arm-none-linux-gnueabihf-gcc
+CXX=arm-none-linux-gnueabihf-g++
+AR=arm-none-linux-gnueabihf-ar
+LD=arm-none-linux-gnueabihf-gcc
 CFLAGS  = -I ../include -I/usr/include
-LDFLAGS = -O -Wall -lpthread -lm -L/usr/local/lib -L../bin -L/usr/lib -lfcgi 
+LDFLAGS = -O -Wall -lpthread -lm -L/usr/local/lib -L../bin  -lcgi 
 TOP_DIR =..
 LIB_DIR =$(TOP_DIR)/bin
 PROG = cgi.fcgi
