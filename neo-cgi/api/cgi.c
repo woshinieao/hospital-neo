@@ -160,45 +160,6 @@ int check_cfg()
 }
 
 
-int fix_net_config(char *ip ,char *mask, char *gateway)
-{
-	int offet_r = 0;
-	char buf[1024];
-	char *p = NULL;
-	char *pDst[3] = {NULL};
-	int i=0;
-	if(ip ==NULL && mask== NULL && gateway==NULL)
-		return SET_ERR;
-	pDst[0] = ip,pDst[1] = mask,pDst[2]=gateway;
-	int iTemNum= sizeof(ip_interfacesWlan)/sizeof(tClassMember);
-	FILE *fd = fopen(NET_CONFIG_FILE,"a");
-	memset(buf,0,1024);
-
-	while(fgets(buf,1024,fd) !=EOF)
-	{
-		if(strcmp(ip_interfacesEth[0].item,buf) != 0)
-			continue;
-			memset(buf,0,1024);
-			fgets(buf,1024,fd);			
-			if((strcmp(buf,ip_interfacesEth[1].item)) ==NULL)
-				return SET_ERR;
-			for( i=0;i<3;i++)
-			{
-				memset(buf,0,1024);
-				fgets(buf,1024,fd);				
-				if((p=strstr(buf,ip_interfacesEth[i+2].item)) ==NULL)
-					return SET_ERR;
-				sprintf(buf+sizeof(ip_interfacesEth[i+2].item)," %s",pDst[i]);
-				offet_r =lseek(fd,(0-strlen(buf)),SEEK_CUR);
-				fputs(buf,fd);
-			}
-			break;
-	}
-	fclose(fd);
-
-}
-
-
 int set_server_ip()
 {
 	char *p = NULL;
@@ -431,7 +392,7 @@ int main(int argc, char ** argv)
 		{
 			if( (strcmp(argv[1],"-v") == 0) || (strcmp(argv[1],"-V") == 0))
 			{
-				printf("Version:%lu.%lu.%lu.%lu %8s\n",(version&0xFF000000)>>24,(version&0xFF0000)>>16,(version&0xFF00)>>8,(version&0xFF),__TIME__);
+				printf("%lu.%lu.%lu.%lu\n",(version&0xFF00)>>8,(version&0xFF),VERSION_DATE_AS_INT,VERSION_TIME);
 				return 0;
 			}
 		}
