@@ -38,7 +38,7 @@ DAY = (VERSION_DATE_AS_INT-((VERSION_YEAR - 2017) * 12 + VERSION_MONTH-1) * 31)
 
 
 
-#define SERVER_VERSION 0x0102
+#define SERVER_VERSION 0x0103
 /******************************************************************************
 * File Name     : matrix-temp_humidity.c
 * Module Name   : matrix-temp_humidity
