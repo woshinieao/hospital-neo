@@ -52,7 +52,9 @@ extern int readIntValueFromFile(char* fileName);
 #define MAX_CFG_BUF  		(512)
 #define DRIVER_MODULE       "dht11"
 #define MAIN_CFG_FILE 	"/mnt/mmc1/server.conf"
-#define SHT11_SYS_PATH  "/sys/devices/platform/sht10.0" 
+#define SHT11_SYS_PATH_0  "/sys/devices/platform/sht10.0" 
+#define SHT11_SYS_PATH_1  "/sys/devices/platform/sht10.1" 
+
 
 
 

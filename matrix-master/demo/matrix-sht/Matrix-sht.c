@@ -276,14 +276,19 @@ void *check_state(void *para)
 
 int main(int argc, char ** argv)
 {
-    int ret = -1;
+    int ret = 0;
 	int id=0;
-    int dhtTemp=0, dhtHdty=0;
-	char bufPost[512];
+    int dhtTemp_0=0, dhtHdty_0=0;
+	int dhtTemp_1=0, dhtHdty_1=0;
+	char bufPost_0[512];
+	char bufPost_1[512];
 	pthread_t pid;
 	unsigned long version = SERVER_VERSION;    
-    char dht11FileTem[FILE_PATH_LENGTH];
-	char dht11FileHum[FILE_PATH_LENGTH];
+    char dht11FileTem_0[FILE_PATH_LENGTH];
+	char dht11FileHum_0[FILE_PATH_LENGTH];
+
+	char dht11FileTem_1[FILE_PATH_LENGTH];
+	char dht11FileHum_1[FILE_PATH_LENGTH];
 
 	if(argc == 2  ) 
 	{
@@ -305,56 +310,102 @@ int main(int argc, char ** argv)
 	{
 		pthread_detach(pid);
 	}	
-    sprintf(dht11FileHum, "%s/humidity1_input", SHT11_SYS_PATH);
-    sprintf(dht11FileTem, "%s/temp1_input", SHT11_SYS_PATH);
-	if ((access(dht11FileTem, F_OK) == -1) && access(dht11FileTem, F_OK) == -1) {
-		ServerLog("file %s or %s no exist! ", dht11FileHum,dht11FileTem);
-		return -1;
-	}
 
-	char buffTemp[255];
-	char buffHum[255];
-	int len = sizeof(buffHum)-1;
-	FILE *fpTem = fopen(dht11FileTem,"r");
-	if (fpTem == NULL) {
-		ServerLog("Unable to open file %s",dht11FileTem);
+    sprintf(dht11FileHum_0, "%s/humidity1_input", SHT11_SYS_PATH_0);
+    sprintf(dht11FileTem_0, "%s/temp1_input", SHT11_SYS_PATH_0);
+	sprintf(dht11FileHum_1, "%s/humidity1_input", SHT11_SYS_PATH_1);
+    sprintf(dht11FileTem_1, "%s/temp1_input", SHT11_SYS_PATH_1);
+	if ((access(dht11FileTem_0, F_OK) == -1) && access(dht11FileTem_0, F_OK) == -1) {
+		ServerLog("file %s or %s no exist! ", dht11FileHum_0,dht11FileTem_0);
+		ret += -1;
+	}
+	if ((access(dht11FileTem_1, F_OK) == -1) && access(dht11FileTem_1, F_OK) == -1) {
+		ServerLog("file %s or %s no exist! ", dht11FileHum_1,dht11FileTem_1);
+		ret += -1;
+	}
+	if(ret <0)
+		return -1;
+		
+
+	char buffTemp_0[255];
+	char buffHum_0[255];
+	int len = sizeof(buffHum_0)-1;
+	FILE *fpTem_0 = fopen(dht11FileTem_0,"r");
+	if (fpTem_0 == NULL) {
+		ServerLog("Unable to open file %s",dht11FileTem_0);
 		return -1;
 	} 
-	FILE *fpHum = fopen(dht11FileHum,"r");
-	if (fpHum == NULL) {
-		ServerLog("Unable to open file %s",dht11FileHum);
+	FILE *fpHum_0 = fopen(dht11FileHum_0,"r");
+	if (fpHum_0 == NULL) {
+		ServerLog("Unable to open file %s",dht11FileHum_0);
 		return -1;
 	}
-	ServerLog("dht11FileHum: %s  dht11FileTem:%s ",dht11FileHum,dht11FileTem);
+	ServerLog("dht11FileHum_0: %s  dht11FileTem_0:%s ",dht11FileHum_0,dht11FileTem_0);
+
+
+	char buffTemp_1[255];
+	char buffHum_1[255];
+	FILE *fpTem_1 = fopen(dht11FileTem_1,"r");
+	if (fpTem_1 == NULL) {
+		ServerLog("Unable to open file %s",dht11FileTem_1);
+		return -1;
+	} 
+	FILE *fpHum_1 = fopen(dht11FileHum_1,"r");
+	if (fpHum_1 == NULL) {
+		ServerLog("Unable to open file %s",dht11FileHum_1);
+		return -1;
+	}
+	ServerLog("dht11FileHum_1: %s  dht11FileTem_1:%s ",dht11FileHum_1,dht11FileTem_1);
+
 
 	while(1){
-		if(id >100000)
-			id = 0;
-		id++;
-		memset(buffTemp, 0, sizeof(buffTemp));
-  		memset(buffHum, 0, sizeof(buffHum));	
-		if (fread(buffTemp, sizeof(char), len, fpTem)>0) 
-			dhtTemp = atoi(buffTemp)/100;
+		
+		memset(buffTemp_0, 0, sizeof(buffTemp_0));
+  		memset(buffHum_0, 0, sizeof(buffHum_0));
+		memset(buffTemp_1, 0, sizeof(buffTemp_1));
+  		memset(buffHum_1, 0, sizeof(buffHum_1));
+		if (fread(buffTemp_0, sizeof(char), len, fpTem_0)>0) 
+			dhtTemp_0 = atoi(buffTemp_0)/100;
 		else
 			ServerLog("Faided to get temperature ");
-		if (fread(buffHum, sizeof(char), len, fpHum)>0) 
-			dhtHdty = atoi(buffHum)/100;
+		if (fread(buffHum_0, sizeof(char), len, fpHum_0)>0) 
+			dhtHdty_0 = atoi(buffHum_0)/100;
 		else
 			ServerLog("Faided to get humidity ");
+		ServerLog("sdhtTemp_0:%d dhHdty_0:%d  ",dhtTemp_0,dhtHdty_0);	
 
-			ServerLog("sdhtTemp:%d dhHdty:%d  ",dhtTemp,dhtHdty);
-		fseek(fpTem,0,SEEK_SET);
-		fseek(fpHum,0,SEEK_SET);
+
+		if (fread(buffTemp_1, sizeof(char), len, fpTem_1)>0) 
+			dhtTemp_1 = atoi(buffTemp_1)/100;
+		else
+			ServerLog("Faided to get temperature ");
+		if (fread(buffHum_1, sizeof(char), len, fpHum_1)>0) 
+			dhtHdty_1 = atoi(buffHum_1)/100;
+		else
+			ServerLog("Faided to get humidity ");
+		ServerLog("sdhtTemp_1:%d dhHdty_1:%d  ",dhtTemp_1,dhtHdty_1);
+	
+		fseek(fpTem_0,0,SEEK_SET);
+		fseek(fpHum_0,0,SEEK_SET);
+		fseek(fpTem_1,0,SEEK_SET);
+		fseek(fpHum_1,0,SEEK_SET);
 		sleep(1);	
 		pthread_mutex_lock(&ip_mutex);	
-		sprintf(bufPost,"wget http://%s:%d/collect.json?did=%03d%03d%03d%03d\\&pid=%d\\&tem=%d\\&hum=%d -O wget.json",server_ip,port,ip1,ip2,ip3,ip4,id,dhtTemp,dhtHdty);
+		id=0;
+		sprintf(bufPost_0,"wget http://%s:%d/collect.json?did=%03d%03d%03d%03d\\&pid=%d\\&tem=%d\\&hum=%d -O wget.json",server_ip,port,ip1,ip2,ip3,ip4,id,dhtTemp_0,dhtHdty_0);
+		id=1;
+		sprintf(bufPost_1,"wget http://%s:%d/collect.json?did=%03d%03d%03d%03d\\&pid=%d\\&tem=%d\\&hum=%d -O wget.json",server_ip,port,ip1,ip2,ip3,ip4,id,dhtTemp_1,dhtHdty_1);
+
 		pthread_mutex_unlock(&ip_mutex);
-		printf("%s\n",bufPost);
-		system(bufPost);
+	//	printf("%s\n",bufPost);
+		system(bufPost_0);
+		system(bufPost_1);
 		sleep(interval);
 	}
-	fclose(fpHum);
-	fclose(fpTem);	
+	fclose(fpHum_0);
+	fclose(fpTem_0);	
+	fclose(fpHum_1);
+	fclose(fpTem_1);	
     return ret;
 }
 
