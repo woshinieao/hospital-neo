@@ -1,4 +1,4 @@
-CC = gcc 
+CC = arm-linux-gcc
 
 TARGET	=  $(patsubst Matrix-%.c,matrix-%, $(wildcard *.c))
 SRC 	=  $(wildcard *.c)

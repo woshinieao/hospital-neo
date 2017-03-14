@@ -34,7 +34,7 @@ extern int writeIntValueToFile(char* fileName, int value);
 extern int readValueFromFile(char* fileName, char* buff, int len);
 extern int readIntValueFromFile(char* fileName);
 
-#define FILE_PATH_LENGTH           (128)
+#define FILE_PATH_LENGTH           (256)
 #define BOARD_MINI6410             (6410)
 #define BOARD_MINI210              (210)
 #define BOARD_TINY4412             (4412)
@@ -45,4 +45,15 @@ extern int readIntValueFromFile(char* fileName);
 #define BOARD_NANOPC_T2            (44181)
 #define BOARD_NANOPI_M3		   	   (68187)
 #define BOARD_NANOPC_T3		   	   (68181)
+
+#define FALSE	0
+#define TRUE	1
+#define BUF_SIZE            (64)
+#define MAX_CFG_BUF  		(512)
+#define DRIVER_MODULE       "dht11"
+#define MAIN_CFG_FILE 	"/mnt/mmc1/server.conf"
+#define SHT11_SYS_PATH  "/sys/devices/platform/sht10.0" 
+
+
+
 #endif

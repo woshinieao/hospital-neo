@@ -1,4 +1,4 @@
-CC =/home/samba/githubcode/h3-neo/buildroot/output/external-toolchain/bin/arm-linux-gnueabi-gcc 
+CC =arm-linux-gcc 
 
 TARGET	=  $(patsubst Matrix-%.c,matrix-%, $(wildcard *.c))
 SRC 	=  $(wildcard *.c)

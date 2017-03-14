@@ -392,7 +392,7 @@ int cgiLog(const char *format ,... )
 	result = stat( CGI_LOG_FILE, &buf );
 	if(result != 0)  //²»´æÔÚ
 	{
-		fpLog = fopen(CGI_LOG_FILE,"w");
+		fpLog = fopen(CGI_LOG_FILE,"w+");
 	}
 	else 
 	{

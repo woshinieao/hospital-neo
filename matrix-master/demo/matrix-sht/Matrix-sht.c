@@ -252,13 +252,14 @@ int getConfInfo(char *pParent,char *pChild, char *pBuf)
 
 void *check_state(void *para)
 {
+
 	para=NULL;
-	int fd = open("/dev/watchdog",O_RDWR);
-	if(fd<0)
-		return NULL;
+//	int fd = open("/dev/watchdog",O_RDWR);
+//	if(fd<0)
+//		return NULL;
 	while(1)
 	{
-		//write(fd,"feed",4);
+	//	write(fd,"feed",4);
 		getConfInfo("SERVER","server_ip",server_ip);
 		getConfInfo("DEV","address",dev_ip);
 		sscanf(dev_ip,"%d.%d.%d.%d",&ip1,&ip2,&ip3,&ip4);
@@ -268,7 +269,7 @@ void *check_state(void *para)
 		port = atoi(server_port);
 		sleep(3);
 	}
-	close(fd);
+	//close(fd);
 
 }
 
@@ -276,6 +277,7 @@ void *check_state(void *para)
 int main(int argc, char ** argv)
 {
     int ret = -1;
+	int id=0;
     int dhtTemp=0, dhtHdty=0;
 	char bufPost[512];
 	pthread_t pid;
@@ -326,6 +328,9 @@ int main(int argc, char ** argv)
 	ServerLog("dht11FileHum: %s  dht11FileTem:%s ",dht11FileHum,dht11FileTem);
 
 	while(1){
+		if(id >100000)
+			id = 0;
+		id++;
 		memset(buffTemp, 0, sizeof(buffTemp));
   		memset(buffHum, 0, sizeof(buffHum));	
 		if (fread(buffTemp, sizeof(char), len, fpTem)>0) 
@@ -342,7 +347,7 @@ int main(int argc, char ** argv)
 		fseek(fpHum,0,SEEK_SET);
 		sleep(1);	
 		pthread_mutex_lock(&ip_mutex);	
-		sprintf(bufPost,"wget http://%s:%d/collect.json?did=%03d%03d%03d%03d\\&pid=1\\&tem=%d\\&hum=%d -O wget.json",server_ip,port,ip1,ip2,ip3,ip4,dhtTemp,dhtHdty);
+		sprintf(bufPost,"wget http://%s:%d/collect.json?did=%03d%03d%03d%03d\\&pid=%d\\&tem=%d\\&hum=%d -O wget.json",server_ip,port,ip1,ip2,ip3,ip4,id,dhtTemp,dhtHdty);
 		pthread_mutex_unlock(&ip_mutex);
 		printf("%s\n",bufPost);
 		system(bufPost);

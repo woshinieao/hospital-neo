@@ -1,4 +1,4 @@
-CROSS_COMPILE ?=/home/samba/githubcode/h3-neo/buildroot/output/external-toolchain/bin/arm-linux-gnueabi-
+CROSS_COMPILE ?=arm-linux-
 
 AS			= $(CROSS_COMPILE)as
 LD			= $(CROSS_COMPILE)ld

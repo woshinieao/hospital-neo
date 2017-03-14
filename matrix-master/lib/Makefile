@@ -1,4 +1,4 @@
-CROSS_COMPILE ?=
+CROSS_COMPILE ?=arm-linux-
 
 AS		= $(CROSS_COMPILE)as
 LD		= $(CROSS_COMPILE)ld

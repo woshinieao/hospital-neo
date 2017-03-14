@@ -10,7 +10,8 @@ ifconfig wlan0:1 192.168.6.6
 /usr/sbin/mini-httpd -C /etc/mini-httpd.conf &
 cd /mnt/mmc1
 insmod dht11.ko 
-
+insmod sht15.ko
+sleep 5 
 while [ 1 ]
 do
   IP_ALL=$( /sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"|tr -d "地址:")
@@ -73,18 +74,18 @@ echo "gateway:$IP_GW"
 sleep 5
 echo "------------------------------------------------------"
 cd /mnt/mmc1
-i1=`ps -ef |grep matrix-temp_humidity |grep -v "grep" |wc -l`   
+i1=`ps -ef |grep matrix-sht |grep -v "grep" |wc -l`   
 
 if [ $i1 -eq 0 ];then
-   echo "restart matrix-temp_humidity !"
+   echo "restart matrix-sht !"
    sleep 1
 
 
-   killall matrix-temp_humidity
-   chmod +x matrix-temp_humidity
-   ./matrix-temp_humidity &
+   killall matrix-sht
+   chmod +x matrix-sht
+   ./matrix-sht &
    sleep 5
-  echo matrix-temp_humidity restart on `date` >> $LOG_FILE
+  echo matrix-sht restart on `date` >> $LOG_FILE
 fi
 
 

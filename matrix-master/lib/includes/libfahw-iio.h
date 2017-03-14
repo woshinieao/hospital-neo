@@ -5,6 +5,8 @@
 #define	DHT_TEMP 		        (1)
 #define	DHT_HUMIDITY	        (2)
 #define DHT11_SYS_PATH          "/sys/devices/platform/dht11/"   
+  
+
 #define SET_DHT11_PIN           (0)
 #define UNSET_DHT11_PIN         (1)
 #define GET_DHT11_PIN           (4)
